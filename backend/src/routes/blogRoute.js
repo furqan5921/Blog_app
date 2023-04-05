@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { isAdmin, isAuthor, isAuthorOrAdmin } = require('../middlewares/authMiddleware');
+const { isAdmin, isAuthor, isAuthorOrAdmin, authMiddleware } = require('../middlewares/authMiddleware');
 
 const { getAllBlogs, getaBlog, postBlog, updateBlog, deleteBlog } = require('../controller/blogControl');
 
@@ -13,7 +13,7 @@ router.get('/', getAllBlogs);
 router.get('/:id', getaBlog);
 
 
-router.post('/createBlog', isAuthor, postBlog);
+router.post('/createBlog', authMiddleware, isAuthor, postBlog);
 
 
 router.put('/:id', isAuthorOrAdmin, updateBlog);

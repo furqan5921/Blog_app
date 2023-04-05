@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 const userRouter = require("./routes/userRoute")
+const commentRouter = require("./routes/commentRoute");
+const blogRouter = require("./routes/blogRoute");
 const DBConnection = require("./config/DBConnet")
 const PORT = 8080
 
@@ -14,6 +16,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/users", userRouter)
+app.use("/blog", blogRouter)
+app.use("/comments", commentRouter)
 app.get("/", (req, res) => {
     res.send('Hello World')
 })

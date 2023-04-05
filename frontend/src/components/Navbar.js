@@ -4,20 +4,20 @@ import React from 'react'
 
 const Navbar = () => {
     return (
-        <Flex justifyContent={'space-between'}>
-            <Box w={'48%'}>
+        <Flex justifyContent={'space-between'} align={'center'} bg={'rgb(83,76,135)'}>
+            <Box>
                 <Link href={'/'}>
-                    <Heading>BlogApp</Heading>
+                    <Heading color={'whitesmoke'} p={'1rem'}>BlogApp</Heading>
                 </Link>
             </Box>
             <Flex w={'48%'} justifyContent={'space-evenly'}>
                 <Link href={'/'}>
-                    <Button variant={'link'}>
+                    <Button size={'lg'} color='whitesmoke' variant={'link'}  >
                         Blogs
                     </Button>
                 </Link>
                 <Link href={'/Blog/createBlog'}>
-                    <Button variant={'link'}>
+                    <Button size={'lg'} color='whitesmoke' variant={'link'}>
                         Create Blogs
                     </Button>
                 </Link>

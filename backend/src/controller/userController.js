@@ -29,6 +29,30 @@ const createUser = asyncHandler(async (req, res) => {
         throw new Error("User Already Exists")
     }
 })
+const createAuthor = asyncHandler(async (req, res) => {
+    const { email, firstname, lastname, password, role } = req.body;
+
+    const user = await User.findOne({ email })
+    if (!user) {
+        try {
+            const hash = await argon2.hash(password);
+
+            const newAuthor = await User.create({ email, firstname, lastname, password: hash, role });
+            return res.status(200).send({
+                msg: "Author Created successfully",
+                success: true
+            })
+        } catch (e) {
+            return res.status(404).send({
+                msg: e.message,
+                success: false
+            })
+        }
+    }
+    else {
+        throw new Error("User Already Exists")
+    }
+})
 
 //Login a new user
 const loginUser = asyncHandler(async (req, res) => {
@@ -42,22 +66,16 @@ const loginUser = asyncHandler(async (req, res) => {
         const validatePassword = await argon2.verify(user.password, password);
         if (validatePassword) {
             const { _id, firstname, lastname, email, role } = user;
-            const refreshToken = await generateRefreshToken(_id)
-            const updateUser = await User.findOneAndUpdate(_id, {
-                refreshToken
-            },
-                {
-                    new: true
-                })
-        
+
+
+
             return res.status(200).send({
                 message: "Login success",
-                token: generateToken(_id, email),
+                token: generateToken(_id, email, role, firstname, lastname),
+                refreshToken: generateRefreshToken(_id),
                 firstname,
                 lastname,
                 role,
-                mobile,
-
             });
         }
         else {
@@ -70,5 +88,21 @@ const loginUser = asyncHandler(async (req, res) => {
     return res.send("Invalid login");
 })
 
+const handleRefreshToken = asyncHandler(async (req, res) => {
 
-module.exports = { createUser, loginUser }
+    const refreshToken = req.headers.authorization.split(" ")[1]
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET)
+    if (decoded == jwt.TokenExpiredError) {
+        return res.status(401).json({ message: 'Token expired' });
+    }
+    const user = await User.findById(decoded?.id)
+    if (user) {
+        const accessToken = generateToken(user?._id, user?.email, user?.role, user?.firstname, user?.lastname)
+        res.status(200).send({ accessToken })
+    }
+    else {
+        throw new Error('Token is not valid')
+    }
+})
+
+module.exports = { createUser, loginUser, handleRefreshToken, createAuthor }

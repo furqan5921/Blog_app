@@ -1,5 +1,5 @@
 const User = require("../models/userModel")
-const asyncHandler = require("asyncHandler")
+const asyncHandler = require("express-async-handler")
 const jwt = require("jsonwebtoken")
 
 
@@ -36,6 +36,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 })
 const isAuthor = asyncHandler(async (req, res, next) => {
     const { email } = req.user
+    console.log(req.user)
     const author = await User.findOne({ email })
     // console.log(admin)
     if (author.role !== "author") {
@@ -56,4 +57,4 @@ const isAuthorOrAdmin = asyncHandler(async (req, res, next) => {
         next()
     }
 })
-module.exports = { isAdmin, isAuthor, authMiddleware ,isAuthorOrAdmin}
+module.exports = { isAdmin, isAuthor, authMiddleware, isAuthorOrAdmin }

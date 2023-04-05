@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Comment = require('../models/commentModel');
+const { getComment } = require('../middlewares/commentMiddleware');
 
 // Create a new comment
 router.post('/', async (req, res) => {
@@ -55,19 +56,7 @@ router.delete('/:id', getComment, async (req, res) => {
     }
 });
 
-// Middleware function to get a specific comment by ID
-async function getComment(req, res, next) {
-    let comment;
-    try {
-        comment = await Comment.findById(req.params.id);
-        if (comment == null) {
-            return res.status(404).json({ message: 'Comment not found' });
-        }
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-    res.comment = comment;
-    next();
-}
+
+
 
 module.exports = router;
