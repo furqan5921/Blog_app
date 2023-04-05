@@ -12,15 +12,20 @@ import {
     Stack,
     chakra
 } from "@chakra-ui/react";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 import { FaLock, FaUserAlt } from "react-icons/fa";
+
 
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 const Login = () => {
+    const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
@@ -36,8 +41,28 @@ const Login = () => {
             [name]: value
         })
     }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true)
+
+        try {
+            const res = await axios.post('http://localhost:8080/users/login', data)
+            setLoading(false)
+            const { token, refreshToken, firstname, lastname, role } = res.data
+            localStorage.setItem('Token', JSON.stringify({ token, refreshToken, firstname, lastname, role }))
+            toast.success('User signed in successfully!', {
+                duration: 4000,
+                position: 'top-center',
+            })
+            router.push('/')
+        } catch (e) {
+            setLoading(false)
+            console.log(e.message)
+        }
+    }
     const handleShowClick = () => setShowPassword(!showPassword);
-    console.log(data);
+
     return (
         <Flex
             flexDirection="column"
@@ -47,6 +72,7 @@ const Login = () => {
             justifyContent="center"
             alignItems="center"
         >
+
             <Stack
                 flexDir="column"
                 mb="2"
@@ -56,7 +82,7 @@ const Login = () => {
                 <Avatar bg="teal.500" />
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <Stack
                             spacing={4}
                             p="1rem"
@@ -109,8 +135,12 @@ const Login = () => {
                             >
                                 Login
                             </Button>
+                            <Toaster />
+
                         </Stack>
+
                     </form>
+
                 </Box>
             </Stack>
             <Box>

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+
+
 import {
     Box,
     Button,
@@ -8,12 +10,54 @@ import {
     Input,
     Text,
     Stack,
-    Image
+    Image,
+    Select
 } from "@chakra-ui/react";
-import Signin from "../../../public/assets/Signup.png";
+
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { Toaster, toast } from "react-hot-toast";
+
 
 const Signup = () => {
+    const navigate = useRouter()
+    const [data, setData] = useState({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        role: "user"
+    })
+    const [loading, setLoading] = useState(false);
+    const handleChange = (e) => {
+        const { name, value } = e.target
+
+        setData({
+            ...data,
+            [name]: value
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        setLoading(true);
+        try {
+            const res = await axios.post('http://localhost:8080/users/signup', data)
+            setLoading(false)
+            toast.success('User signed up successfully!', {
+                position: "top-center",
+                duration: 3000
+            })
+            navigate.push("/Auth/Login")
+        } catch (e) {
+            setLoading(false)
+            console.log(e.message)
+            toast.error(e.message);
+        }
+    }
+
     return (
         <Box
             minHeight="100vh"
@@ -85,117 +129,165 @@ const Signup = () => {
                     </Text>
                 </Stack>
                 <Stack pl={16} pr={24} spacing={6}>
-                    <FormControl id="name">
-                        <FormLabel
+                    <form onSubmit={handleSubmit}>
+                        <FormControl >
+                            <FormLabel
+                                fontSize="sm"
+                                lineHeight="tall"
+                                fontFamily="body"
+                                fontWeight="normal"
+                                pb={"0.5rem"}
+                            >
+                                First Name
+                            </FormLabel>
+                            <Input
+                                type="text"
+                                size="sm"
+                                borderColor="gray.200"
+                                focusBorderColor="purple.500"
+                                text="sm"
+                                lineHeight="tall"
+                                placeholder="Enter your first name"
+                                name="firstname"
+                                onChange={handleChange}
+                                value={data.firstname}
+                                fontFamily="body"
+                                isRequired
+                                _placeholder={{ color: "gray.400" }}
+                            />
+                        </FormControl>
+                        <FormControl >
+                            <FormLabel
+                                fontSize="sm"
+                                lineHeight="tall"
+                                fontFamily="body"
+                                fontWeight="normal"
+                                pb={"0.5rem"}
+                            >
+                                Last Name
+                            </FormLabel>
+                            <Input
+                                type="text"
+                                size="sm"
+                                borderColor="gray.200"
+                                focusBorderColor="purple.500"
+                                text="sm"
+                                lineHeight="tall"
+                                placeholder="Enter your last name"
+                                fontFamily="body"
+                                _placeholder={{ color: "gray.400" }}
+                                name="lastname"
+                                onChange={handleChange}
+                                value={data.lastname}
+                                isRequired
+                            />
+                        </FormControl>
+                        <FormControl >
+                            <FormLabel
+                                fontSize="sm"
+                                lineHeight="tall"
+                                fontFamily="body"
+                                fontWeight="normal"
+                                pb={"0.5rem"}
+                            >
+                                Email{" "}
+                            </FormLabel>
+                            <Input
+                                type="email"
+                                size="sm"
+                                borderColor="gray.200"
+                                focusBorderColor="purple.500"
+                                text="sm"
+                                lineHeight="tall"
+                                placeholder="apoorvas@gmail.com"
+                                fontFamily="body"
+                                _placeholder={{ color: "gray.400" }}
+                                name="email"
+                                onChange={handleChange}
+                                value={data.email}
+                                isRequired
+                            />
+                        </FormControl>
+                        <FormControl >
+                            <FormLabel
+                                fontSize="sm"
+                                lineHeight="tall"
+                                fontFamily="body"
+                                fontWeight="normal"
+                                pb={"0.5rem"}
+                            >
+                                Password{" "}
+                            </FormLabel>
+                            <Input
+                                type="password"
+                                size="sm"
+                                borderColor="gray.200"
+                                focusBorderColor="purple.500"
+                                text="sm"
+                                lineHeight="tall"
+                                placeholder="8+ characters"
+                                fontFamily="body"
+                                _placeholder={{ color: "gray.400" }}
+                                name="password"
+                                onChange={handleChange}
+                                value={data.password}
+                                isRequired
+                            />
+                        </FormControl>
+                        <FormControl >
+                            <FormLabel
+                                fontSize="sm"
+                                lineHeight="tall"
+                                fontFamily="body"
+                                fontWeight="normal"
+                                pb={"0.5rem"}
+                            >
+                                Password{" "}
+                            </FormLabel>
+                            <Select
+                                type="password"
+                                size="sm"
+                                borderColor="gray.200"
+                                focusBorderColor="purple.500"
+                                text="sm"
+                                lineHeight="tall"
+                                name="role"
+                                fontFamily="body"
+                                _placeholder={{ color: "gray.400" }}
+                                onChange={handleChange}
+                                value={data.role}
+                            >
+                                <option value={'user'}>User</option>
+                                <option value={'author'}>Author</option>
+                            </Select>
+                        </FormControl>
+                        <Button
+                            my={3}
+                            size="md"
+                            w={170}
+                            h={45}
+                            borderRadius="40px"
+                            bg="purple.500"
+                            color="white"
+                            border="0"
+                            fontWeight="400"
+                            fontFamily="body"
                             fontSize="sm"
-                            lineHeight="tall"
-                            fontFamily="body"
-                            fontWeight="normal"
-                            pb={"0.5rem"}
+                            cursor="pointer"
+                            _focus={{
+                                outline: "none"
+                            }}
+                            _hover={{
+                                bg: "purple.500"
+                            }}
+                            boxShadow="lg"
+                            isLoading={loading}
+                            type="submit"
                         >
-                            First Name
-                        </FormLabel>
-                        <Input
-                            type="text"
-                            size="sm"
-                            borderColor="gray.200"
-                            focusBorderColor="purple.500"
-                            text="sm"
-                            lineHeight="tall"
-                            placeholder="Apoorva Sharma"
-                            fontFamily="body"
-                            _placeholder={{ color: "gray.400" }}
-                        />
-                    </FormControl>
-                    <FormControl id="name">
-                        <FormLabel
-                            fontSize="sm"
-                            lineHeight="tall"
-                            fontFamily="body"
-                            fontWeight="normal"
-                            pb={"0.5rem"}
-                        >
-                            Last Name
-                        </FormLabel>
-                        <Input
-                            type="text"
-                            size="sm"
-                            borderColor="gray.200"
-                            focusBorderColor="purple.500"
-                            text="sm"
-                            lineHeight="tall"
-                            placeholder="Apoorva Sharma"
-                            fontFamily="body"
-                            _placeholder={{ color: "gray.400" }}
-                        />
-                    </FormControl>
-                    <FormControl id="email">
-                        <FormLabel
-                            fontSize="sm"
-                            lineHeight="tall"
-                            fontFamily="body"
-                            fontWeight="normal"
-                            pb={"0.5rem"}
-                        >
-                            Email{" "}
-                        </FormLabel>
-                        <Input
-                            type="email"
-                            size="sm"
-                            borderColor="gray.200"
-                            focusBorderColor="purple.500"
-                            text="sm"
-                            lineHeight="tall"
-                            placeholder="apoorvas@gmail.com"
-                            fontFamily="body"
-                            _placeholder={{ color: "gray.400" }}
-                        />
-                    </FormControl>
-                    <FormControl id="password">
-                        <FormLabel
-                            fontSize="sm"
-                            lineHeight="tall"
-                            fontFamily="body"
-                            fontWeight="normal"
-                            pb={"0.5rem"}
-                        >
-                            Password{" "}
-                        </FormLabel>
-                        <Input
-                            type="password"
-                            size="sm"
-                            borderColor="gray.200"
-                            focusBorderColor="purple.500"
-                            text="sm"
-                            lineHeight="tall"
-                            placeholder="8+ characters"
-                            fontFamily="body"
-                            _placeholder={{ color: "gray.400" }}
-                        />
-                    </FormControl>
-                    <Button
-                        my={3}
-                        size="md"
-                        w={170}
-                        h={45}
-                        borderRadius="40px"
-                        bg="purple.500"
-                        color="white"
-                        border="0"
-                        fontWeight="400"
-                        fontFamily="body"
-                        fontSize="sm"
-                        cursor="pointer"
-                        _focus={{
-                            outline: "none"
-                        }}
-                        _hover={{
-                            bg: "purple.500"
-                        }}
-                        boxShadow="lg"
-                    >
-                        Signup
-                    </Button>
+                            Signup
+                        </Button>
+                        <Toaster />
+                    </form>
                 </Stack>
             </Box>
         </Box>
