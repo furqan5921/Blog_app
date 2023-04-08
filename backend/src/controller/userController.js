@@ -9,11 +9,13 @@ const createUser = asyncHandler(async (req, res) => {
     const { email, firstname, lastname, password } = req.body;
 
     const user = await User.findOne({ email })
+    console.log(user)
     if (!user) {
         try {
             const hash = await argon2.hash(password);
 
             const newUser = await User.create({ email, firstname, lastname, password: hash });
+
             return res.status(200).send({
                 msg: "User Created successfully",
                 success: true
@@ -38,6 +40,7 @@ const createAuthor = asyncHandler(async (req, res) => {
             const hash = await argon2.hash(password);
 
             const newAuthor = await User.create({ email, firstname, lastname, password: hash, role });
+
             return res.status(200).send({
                 msg: "Author Created successfully",
                 success: true
@@ -60,15 +63,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
+
+
         if (!user) {
             throw new Error("User Not Found")
         }
         const validatePassword = await argon2.verify(user.password, password);
         if (validatePassword) {
             const { _id, firstname, lastname, email, role } = user;
-
-
-
             return res.status(200).send({
                 message: "Login success",
                 token: generateToken(_id, email, role, firstname, lastname),
@@ -76,16 +78,15 @@ const loginUser = asyncHandler(async (req, res) => {
                 firstname,
                 lastname,
                 role,
+                id: _id
             });
         }
         else {
-            throw new Error("Password is Not Mathching")
+            throw new Error("Password is Not Matching")
         }
     } catch (err) {
         throw new Error(err.message)
     }
-
-    return res.send("Invalid login");
 })
 
 const handleRefreshToken = asyncHandler(async (req, res) => {

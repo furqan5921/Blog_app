@@ -44,12 +44,21 @@ const Signup = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8080/users/signup', data)
-            setLoading(false)
-            toast.success('User signed up successfully!', {
-                position: "top-center",
-                duration: 3000
-            })
+            if (data.role == "user") {
+                const res = await axios.post('http://localhost:8080/users/signup', data)
+                setLoading(false)
+                toast.success('User signed up successfully!', {
+                    position: "top-center",
+                    duration: 3000
+                })
+            } else {
+                const res = await axios.post('http://localhost:8080/users/signupAuthor', data)
+                setLoading(false)
+                toast.success('Author signed up successfully!', {
+                    position: "top-center",
+                    duration: 3000
+                })
+            }
             navigate.push("/Auth/Login")
         } catch (e) {
             setLoading(false)
@@ -65,7 +74,7 @@ const Signup = () => {
             flexDirection={["column", "column", "column", "row"]}
         >
             <Stack
-                // width={[1 / 2, 2 / 3, 2 / 3, 1 / 2]}
+
                 justify="center"
                 alignSelf="center"
                 w={["100%", "100%", "50%", "50%"]}

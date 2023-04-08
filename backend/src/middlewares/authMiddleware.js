@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken")
 const isAdmin = asyncHandler(async (req, res, next) => {
     const { email } = req.user
     const admin = await User.findOne({ email })
-    // console.log(admin)
+
     if (admin.role !== "admin") {
         throw new Error("Not Authorized person")
     }
@@ -16,7 +16,9 @@ const isAdmin = asyncHandler(async (req, res, next) => {
 })
 const authMiddleware = asyncHandler(async (req, res, next) => {
     let token;
+
     if (req?.headers?.authorization?.startsWith("Bearer")) {
+
         token = req.headers.authorization.split(" ")[1]
         try {
             if (token) {
@@ -27,18 +29,19 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 
             }
         } catch (e) {
+
             throw new Error("Not Authorized token expired, login again")
         }
     }
     else {
+
         throw new Error("Invalid authorization")
     }
 })
 const isAuthor = asyncHandler(async (req, res, next) => {
     const { email } = req.user
-    console.log(req.user)
     const author = await User.findOne({ email })
-    // console.log(admin)
+
     if (author.role !== "author") {
         throw new Error("Not Authorized person")
     }
@@ -47,14 +50,25 @@ const isAuthor = asyncHandler(async (req, res, next) => {
     }
 })
 const isAuthorOrAdmin = asyncHandler(async (req, res, next) => {
-    const { email } = req.user
-    const author = await User.findOne({ email })
-    // console.log(admin)
-    if (author.role !== "author" || author.role !== "admin") {
-        throw new Error("Not Authorized person")
+
+    try {
+
+        const { email } = req.user
+
+        const author = await User.findOne({ email })
+        console.log(author.role)
+
+
+        if (author.role == "author" || author.role == "admin") {
+            
+            next()
+        }
+        else {
+            throw new Error("Not Authorized person")
+        }
+    } catch (e) {
+        console.log(e.message)
     }
-    else {
-        next()
-    }
+
 })
 module.exports = { isAdmin, isAuthor, authMiddleware, isAuthorOrAdmin }

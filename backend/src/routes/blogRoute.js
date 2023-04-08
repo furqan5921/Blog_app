@@ -16,9 +16,9 @@ router.get('/:id', getaBlog);
 router.post('/createBlog', authMiddleware, isAuthor, postBlog);
 
 
-router.put('/:id', isAuthorOrAdmin, updateBlog);
+router.put('/:id', authMiddleware, isAuthorOrAdmin, updateBlog);
 
 
-router.delete('/:id', isAuthorOrAdmin, deleteBlog);
+router.delete('/:id', authMiddleware, isAuthorOrAdmin, deleteBlog);
 
 module.exports = router;

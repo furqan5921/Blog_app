@@ -8,7 +8,7 @@ const getAllBlogs = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // number of items per page
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
- 
+
     try {
         const blogs = await Blog.find()
             .sort({ date: -1 })
@@ -46,7 +46,7 @@ const getaBlog = asyncHandler(async (req, res) => {
         }
         res.json(blog);
     } catch (err) {
-        console.error(err.message);
+
         if (err.kind === 'ObjectId') {
             return res.status(404).json({ msg: 'Blog post not found' });
         }
@@ -56,6 +56,7 @@ const getaBlog = asyncHandler(async (req, res) => {
 
 // Create a blog post
 const postBlog = asyncHandler(async (req, res) => {
+    console.log(req.user)
     try {
         const newBlog = new Blog({
             title: req.body.title,
@@ -63,7 +64,7 @@ const postBlog = asyncHandler(async (req, res) => {
             author: req.user
         });
         const blog = await newBlog.save();
-        res.json(blog);
+        res.status(200).json(blog);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -72,9 +73,11 @@ const postBlog = asyncHandler(async (req, res) => {
 
 // Update a blog post
 const updateBlog = asyncHandler(async (req, res) => {
-    validateMongodbId(id);
+    // validateMongodbId(id);
+    
     try {
         const blog = await Blog.findById(req.params.id);
+
         if (!blog) {
             return res.status(404).json({ msg: 'Blog post not found' });
         }
@@ -93,16 +96,16 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 // Delete a blog post
 const deleteBlog = asyncHandler(async (req, res) => {
-    validateMongodbId(id);
+     
+    // validateMongodbId(id);
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndDelete(req.params.id);
         if (!blog) {
             return res.status(404).json({ msg: 'Blog post not found' });
         }
-        await blog.remove();
         res.json({ msg: 'Blog post removed' });
     } catch (err) {
-        console.error(err.message);
+        console.log(err.message);
         if (err.kind === 'ObjectId') {
             return res.status(404).json({ msg: 'Blog post not found' });
         }
